@@ -672,8 +672,7 @@ astcenc_error astcenc_config_init(
 			config.v_a_stdev = 50.0f;
 		}
 	}
-
-	if (flags & ASTCENC_FLG_MAP_MASK)
+	else if (flags & ASTCENC_FLG_MAP_MASK)
 	{
 		config.v_rgba_radius = 3;
 		config.v_rgba_mean_stdev_mix = 0.03f;
@@ -682,11 +681,27 @@ astcenc_error astcenc_config_init(
 		config.v_a_mean = 0.0f;
 		config.v_a_stdev = 25.0f;
 	}
-
-	if (flags & ASTCENC_FLG_MAP_RGBM)
+	else if (flags & ASTCENC_FLG_MAP_RGBM)
 	{
 		config.rgbm_m_scale = 5.0f;
 		config.cw_a_weight = 2.0f * config.rgbm_m_scale;
+	}
+	// Color data
+	else
+	{
+		// This is a very basic perceptual metric for RGB color data, which weights error
+		// significance by the perceptual luminance contribution of each color channel. For
+		// luminance the usual weights to compute luminance from an RGB value are as follows:
+		//
+		//     l = r * 0.3 + g * 0.59 + b * 0.11
+		//
+		// ... but we scale these up to keep a better balance between color and alpha.
+		if (flags & ASTCENC_FLG_USE_PERCEPTUAL)
+		{
+			config.cw_r_weight = 0.3f * 2.0f;
+			config.cw_g_weight = 0.59f * 2.0f;
+			config.cw_b_weight = 0.11f * 2.0f;
+		}
 	}
 
 	config.flags = flags;
