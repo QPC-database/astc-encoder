@@ -20,8 +20,9 @@ cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0069 NEW)  # LTO support
 cmake_policy(SET CMP0091 NEW)  # MSVC runtime support
 
+# Disable 'struct_name' : structure was padded due to __declspec(align())
 if(MSVC)
-    add_compile_options("/wd4324") # Disable structure was padded due to alignment specifier
+    add_compile_options("/wd4324")
 endif()
 
 project(astcencoder VERSION 3.0.0)
